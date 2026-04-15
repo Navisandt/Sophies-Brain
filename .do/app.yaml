@@ -1,6 +1,14 @@
 name: thesis-system-map
-static_sites:
+services:
   - name: thesis-system-map
-    source_dir: src
-    index_document: index.html
-    error_document: index.html
+    github:
+      branch: main
+      deploy_on_push: true
+    run_command: node server.js
+    http_port: 8080
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    instance_count: 1
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET

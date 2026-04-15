@@ -5,8 +5,9 @@
   "main": "electron/main.cjs",
   "type": "module",
   "scripts": {
-    "start": "electron .",
-    "dev": "electron .",
+    "start": "node server.js",
+    "dev": "node server.js",
+    "electron": "electron .",
     "package": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -29,6 +30,8 @@
     }
 },
   "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.13.3",
     "three": "^0.180.0"
   },
   "devDependencies": {
