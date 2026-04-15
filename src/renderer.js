@@ -1257,8 +1257,7 @@ function buildClusterShells() {
     state.shellMap.set(cluster.id, {
       group,
       hitMesh: faintCore,
-      rotY: 0.00042 + Math.random() * 0.00028,
-      rotX: 0.00008 + Math.random() * 0.00004
+      rotY: 0.00042 + Math.random() * 0.00028
     })
 
     // Soft occlusion shell: hides clusters behind this one when camera looks through
@@ -3670,7 +3669,6 @@ function animate() {
   state.shellMap.forEach((entry, clusterId) => {
     if (!state.povMode) {
       entry.group.rotation.y += entry.rotY
-      entry.group.rotation.x += entry.rotX
     }
     if (state.povOffsets.size > 0) {
       const cluster = getCluster(clusterId)
