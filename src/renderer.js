@@ -1249,6 +1249,12 @@ function rebuildScene() {
   disposeGroup(world.nodesGroup)
   disposeGroup(world.linksGroup)
 
+  // Save rotation state so staying clusters don't visually skip on rebuild
+  const savedRotations = new Map()
+  state.shellMap.forEach((entry, id) => {
+    savedRotations.set(id, { rotY: entry.rotY, angle: entry.group.rotation.y })
+  })
+
   // Dispose tracked shells (leaving groups stay for animation)
   state.shellMap.forEach((entry) => {
     world.shellsGroup.remove(entry.group)
@@ -1274,6 +1280,16 @@ function rebuildScene() {
   removePovLabels()
 
   buildClusterShells()
+
+  // Restore rotation state for clusters that were already visible
+  state.shellMap.forEach((entry, id) => {
+    const saved = savedRotations.get(id)
+    if (saved) {
+      entry.group.rotation.y = saved.angle
+      entry.rotY = saved.rotY
+    }
+  })
+
   buildNodes()
   buildLinks()
   rebuildClusterLabels()
