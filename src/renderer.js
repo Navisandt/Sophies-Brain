@@ -1826,7 +1826,15 @@ function showNodeIndicator(node) {
     makeBtn('View connections').onclick = () => enterPovMode(node.id)
   }
 
-  makeBtn('Delete', 'danger-indicator').onclick = deleteSelectedNode
+  makeBtn('Delete', 'danger-indicator').onclick = () => {
+    const nodeId = node.id
+    const cid = node.clusterId
+    state.project.nodes = state.project.nodes.filter((n) => n.id !== nodeId)
+    state.project.links = state.project.links.filter((l) => l.source !== nodeId && l.target !== nodeId)
+    clearSelection()
+    if (cid) { autoResizeCluster(cid); distributeNodesInCluster(cid) }
+    refreshAll()
+  }
 
   makeBtn('Exit focus').onclick = () => {
     clearSelection()
@@ -2435,9 +2443,12 @@ function enterClusterFocus(clusterId) {
   }
 
   makeBtn('Delete', 'danger-indicator').onclick = () => {
-    state.selectedClusterId = clusterId
+    const removedNodes = new Set(state.project.nodes.filter((n) => n.clusterId === clusterId).map((n) => n.id))
+    state.project.clusters = state.project.clusters.filter((c) => c.id !== clusterId)
+    state.project.nodes = state.project.nodes.filter((n) => n.clusterId !== clusterId)
+    state.project.links = state.project.links.filter((l) => !removedNodes.has(l.source) && !removedNodes.has(l.target))
     exitClusterFocus()
-    deleteSelectedCluster()
+    refreshAll()
   }
 
   document.getElementById('cluster-indicator-exit-btn').onclick = exitClusterFocus
