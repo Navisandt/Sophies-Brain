@@ -98,3 +98,4 @@ Possible next steps for your research workflow:
 - Use node notes for short interpretations or argument fragments
 - Save multiple JSON versions for different chapters or presentation modes
 - Keep one "presentation" file and one "research" file
+trigger rebuild
