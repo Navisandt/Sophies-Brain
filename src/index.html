@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thesis System Map</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+  <div id="startup-screen">
+    <div id="startup-card">
+      <div class="startup-eyebrow">Thesis System Map</div>
+      <h1>Open a project</h1>
+      <p class="startup-copy">
+        Continue your most recent work, start a new project, or open an existing saved project.
+      </p>
+
+      <div class="startup-actions">
+        <button id="startup-load-recent-btn" type="button">Load most recent save</button>
+        <button id="startup-open-project-btn" type="button" class="ghost-btn">Browse projects</button>
+        <button id="startup-new-project-btn" type="button" class="ghost-btn">New project</button>
+        <button id="startup-back-btn" type="button" class="ghost-btn hidden">Back</button>
+      </div>
+
+      <div id="startup-recent-meta" class="helper-text">Checking recent projects…</div>
+      <div id="startup-list-heading" class="helper-text">Projects</div>
+
+      <div id="startup-project-list" class="startup-project-list"></div>
+    </div>
+  </div>
+
+  <div id="app-shell" class="hidden-app">
+      <aside id="sidebar">
+        <div class="sb-header">
+          <div class="sb-header-left">
+            <div id="brand-title" class="sb-title" contenteditable="true" spellcheck="false">Thesis System Map</div>
+            <div id="hud-counts-sidebar" class="sb-counts"></div>
+          </div>
+          <div class="sb-header-right">
+            <button id="autorotate-toggle-btn" class="sb-icon-btn" title="Toggle auto-rotate">↻</button>
+            <button id="particles-toggle-btn" class="sb-icon-btn" title="Toggle particles">✦</button>
+            <button id="presentation-edit-btn" class="sb-icon-btn" title="Edit presentation">▶</button>
+            <div class="sb-more-wrap">
+              <button id="sb-more-btn" class="sb-icon-btn" title="More options">···</button>
+              <div id="sb-more-menu" class="sb-more-menu hidden">
+                <button id="save-project-as-btn">Save as version</button>
+                <button id="open-project-btn">Open JSON</button>
+                <button id="new-project-btn">Reset demo</button>
+                <button id="dark-mode-btn" type="button">Light mode</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-search-wrap">
+          <input id="sidebar-search-input" type="search" class="sidebar-search-input" placeholder="Search nodes…" autocomplete="off" />
+          <button id="sidebar-search-clear" class="sidebar-search-clear hidden" type="button" title="Clear">✕</button>
+        </div>
+
+        <div class="sidebar-section-heading">
+          <span>Clusters &amp; Nodes</span>
+          <button id="add-item-btn" class="sb-add-btn" type="button">+ add</button>
+        </div>
+        <div id="add-item-menu" class="sb-add-menu hidden">
+          <button id="add-cluster-btn" type="button">+ Cluster</button>
+          <button id="add-node-btn" type="button">+ Node</button>
+        </div>
+        <div id="cluster-node-tree" class="sidebar-tree"></div>
+
+        <div class="sb-footer">
+          <button id="save-project-btn" class="sb-save-btn">Save</button>
+          <div id="project-path" class="sb-path"></div>
+        </div>
+      </aside>
+
+      <main id="viewport-shell">
+        <button id="sidebar-toggle-btn" class="sidebar-toggle" title="Toggle sidebar">▶</button>
+        <div id="scene-root"></div>
+        <div id="overlay"></div>
+        <div id="hud-header">
+          <div id="hud-title"><span id="hud-title-text">SYSTEM MAP</span> <span id="hud-subtitle">Research / presentation workspace</span></div>
+          <div id="hud-status"><span class="status-dot"></span><span id="hud-counts">0 clusters · 0 nodes · 0 links</span></div>
+        </div>
+        <div id="selection-card" class="hidden"></div>
+          <div id="pov-indicator" class="hidden">
+            <div class="pov-indicator-eyebrow">Viewing connections from</div>
+            <div id="pov-indicator-name"></div>
+            <div id="pov-indicator-meta"></div>
+            <button id="pov-indicator-exit-btn" class="indicator-btn">Exit view</button>
+          </div>
+          <div id="cluster-indicator" class="hidden">
+            <div class="pov-indicator-eyebrow">Cluster focus</div>
+            <div id="cluster-indicator-name"></div>
+            <div id="cluster-indicator-meta"></div>
+            <div id="cluster-indicator-actions"></div>
+            <button id="cluster-indicator-exit-btn" class="indicator-btn">Exit focus</button>
+          </div>
+          <div id="node-indicator" class="hidden">
+            <div class="pov-indicator-eyebrow">Node focus</div>
+            <div id="node-indicator-name"></div>
+            <div id="node-indicator-meta"></div>
+            <div id="node-indicator-actions"></div>
+          </div>
+          <div id="toast"></div>
+
+          <div id="perspective-switcher">
+            <span class="perspective-eyebrow">Perspectives</span>
+            <div id="perspective-list"></div>
+            <button id="add-perspective-btn">+ New perspective</button>
+          </div>
+
+          <div id="connect-hud" class="hidden">
+            <span>CONNECT MODE</span>
+            <span id="connect-hud-source"></span>
+            <span id="connect-hud-hint" class="connect-hud-hint">Click a cluster to zoom in · Escape to exit</span>
+            <button id="connect-hud-back-btn" class="small-btn hidden" style="pointer-events:auto;">Back</button>
+            <button id="connect-hud-exit-btn" class="small-btn" style="pointer-events:auto;">Exit</button>
+          </div>
+
+          <div id="relation-overlay">
+            <div id="relation-overlay-vignette"></div>
+            <div id="relation-overlay-text">
+              <div id="relation-overlay-label"></div>
+              <div id="relation-overlay-name"></div>
+              <div id="relation-overlay-note"></div>
+            </div>
+            <button id="relation-overlay-edit-btn" title="Edit relation">✎</button>
+          </div>
+
+          <div id="relation-edit-card"></div>
+
+          <!-- Presentation editor panel -->
+          <div id="presentation-panel" class="hidden">
+            <div class="pres-panel-header">
+              <span class="pres-panel-title">PRESENTATION</span>
+              <button id="pres-panel-close-btn" class="pres-close-btn">✕</button>
+            </div>
+            <div class="pres-panel-hint">Add the current view as a step. During presentation, press <kbd>→</kbd> or <kbd>Space</kbd> to advance.</div>
+            <div id="pres-step-list" class="pres-step-list"></div>
+            <div class="pres-panel-footer">
+              <button id="pres-add-step-btn" class="pres-add-btn">+ Add current state</button>
+              <button id="pres-start-btn" class="pres-start-btn" disabled>▶ Present</button>
+            </div>
+          </div>
+
+          <!-- Presentation HUD (active during presentation) -->
+          <div id="presentation-hud" class="hidden">
+            <button id="pres-hud-prev-btn" class="pres-hud-arrow" title="Previous">←</button>
+            <div class="pres-hud-center">
+              <div id="pres-hud-label"></div>
+              <div id="pres-hud-counter"></div>
+            </div>
+            <button id="pres-hud-next-btn" class="pres-hud-arrow" title="Next (or Space)">→</button>
+            <button id="pres-hud-exit-btn" class="pres-hud-exit">Exit</button>
+          </div>
+
+          <div id="save-version-modal" class="modal hidden">
+            <div class="modal-card">
+              <h3>Create new save</h3>
+              <p class="helper-text">Optionally enter a name for this save version.</p>
+              <label class="field">
+                <span>Save name</span>
+                <input id="save-version-name" type="text" maxlength="120" placeholder="e.g. Before chapter rewrite" />
+              </label>
+              <div class="toolbar-row end">
+                <button id="cancel-save-version-btn" type="button" class="ghost-btn">Cancel</button>
+                <button id="confirm-save-version-btn" type="button">Create save</button>
+              </div>
+            </div>
+          </div>
+      </main>
+    </div>
+
+    <script type="importmap">
+    {
+  "imports": {
+    "three": "../node_modules/three/build/three.module.js",
+    "three/addons/": "./vendor/addons/"
+      }
+    }
+</script>
+<script type="module" src="./renderer.js"></script>
+  </body>
+</html>

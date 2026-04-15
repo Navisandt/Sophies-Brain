@@ -1,0 +1,38 @@
+{
+  "name": "thesis-system-map",
+  "version": "0.1.0",
+  "description": "Electron desktop app for exploring and editing thesis clusters, nodes, and relationships in 3D.",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "package": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.research.thesis-system-map",
+    "productName": "Thesis System Map",
+    "asar": false,
+    "files": [
+      "src/**/*",
+      "electron/**/*",
+      "node_modules/three/build/**/*",
+      "node_modules/three/examples/jsm/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "nsis"
+    }
+},
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.8.1"
+  }
+}

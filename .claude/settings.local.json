@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"d:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist\\\\win-unpacked\\\\resources\\\\app\" /b)",
+      "Bash(cmd.exe /c \"dir /b /s \"\"d:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist\\\\win-unpacked\\\\resources\"\"\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''D:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist\\\\win-unpacked\\\\resources'' -Recurse -Name | Select-Object -First 40\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''D:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist'' -Recurse -Name | Select-Object -First 40\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''D:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist'' -Recurse -Name | Select-Object -First 60\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''D:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist\\\\win-unpacked\\\\resources'' -Recurse -Name | Select-Object -First 60\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''D:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist\\\\win-unpacked\\\\resources\\\\app\\\\node_modules\\\\three'' -Name\")",
+      "Bash(powershell -Command \"Get-Content ''D:\\\\thesis-system-map-app\\\\thesis-system-map-app\\\\dist\\\\builder-effective-config.yaml''\")",
+      "Bash(node --check /Users/navidsattorov/Desktop/thesis-system-map-app/thesis-system-map-app/src/renderer.js)"
+    ]
+  }
+}
