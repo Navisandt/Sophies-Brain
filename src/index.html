@@ -133,14 +133,22 @@
           <!-- Presentation editor panel -->
           <div id="presentation-panel" class="hidden">
             <div class="pres-panel-header">
-              <span class="pres-panel-title">PRESENTATION</span>
+              <span class="pres-panel-title">PRESENTATIONS</span>
               <button id="pres-panel-close-btn" class="pres-close-btn">✕</button>
             </div>
-            <div class="pres-panel-hint">Add the current view as a step. During presentation, press <kbd>→</kbd> or <kbd>Space</kbd> to advance.</div>
-            <div id="pres-step-list" class="pres-step-list"></div>
-            <div class="pres-panel-footer">
-              <button id="pres-add-step-btn" class="pres-add-btn">+ Add current state</button>
-              <button id="pres-start-btn" class="pres-start-btn" disabled>▶ Present</button>
+            <div id="pres-list" class="pres-list"></div>
+            <div class="pres-list-footer">
+              <button id="pres-new-btn" class="pres-new-btn">+ New presentation</button>
+            </div>
+            <div id="pres-steps-section" class="pres-steps-section hidden">
+              <div class="pres-steps-divider">
+                <span id="pres-steps-heading" class="pres-steps-heading"></span>
+              </div>
+              <div id="pres-step-list" class="pres-step-list"></div>
+              <div class="pres-panel-footer">
+                <button id="pres-add-step-btn" class="pres-add-btn">+ Add state</button>
+                <button id="pres-start-btn" class="pres-start-btn" disabled>▶ Present</button>
+              </div>
             </div>
           </div>
 

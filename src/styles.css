@@ -1438,6 +1438,110 @@ input:focus, select:focus, textarea:focus {
 }
 .pres-close-btn:hover { color: #aaa; }
 
+.pres-list {
+  padding: 6px 8px 2px;
+  max-height: 150px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.pres-list::-webkit-scrollbar { width: 4px; }
+.pres-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.pres-list-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  margin-bottom: 3px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.pres-list-item:hover { background: rgba(255,255,255,0.06); }
+.pres-list-item.selected { background: rgba(126,169,182,0.1); border-color: rgba(126,169,182,0.25); }
+
+.pres-list-name {
+  flex: 1;
+  font-size: 12px;
+  color: #bbb;
+  outline: none;
+  background: none;
+  border: none;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.pres-list-name:focus { color: #eee; text-overflow: clip; outline: none; }
+
+.pres-list-play {
+  background: none;
+  border: none;
+  color: #7ea9b6;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 3px 7px;
+  border-radius: 4px;
+  transition: color 0.12s, background 0.12s;
+  flex-shrink: 0;
+}
+.pres-list-play:hover { color: #a8c8d4; background: rgba(126,169,182,0.15); }
+
+.pres-list-del {
+  background: none;
+  border: none;
+  color: #444;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: color 0.12s;
+  flex-shrink: 0;
+}
+.pres-list-del:hover { color: #e06060; }
+
+.pres-list-footer {
+  padding: 2px 8px 8px;
+  flex-shrink: 0;
+}
+
+.pres-new-btn {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(255,255,255,0.1);
+  color: #555;
+  font-size: 12px;
+  border-radius: 7px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-align: center;
+}
+.pres-new-btn:hover { background: rgba(255,255,255,0.07); color: #999; }
+
+.pres-steps-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.pres-steps-section.hidden { display: none; }
+
+.pres-steps-divider {
+  padding: 8px 16px 2px;
+  flex-shrink: 0;
+}
+.pres-steps-heading {
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .pres-panel-hint {
   font-size: 11px;
   color: #444;

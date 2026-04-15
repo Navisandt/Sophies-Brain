@@ -78,6 +78,7 @@ const state = {
   presentationMode: false,
   presentationEditing: false,
   presentationStep: 0,
+  activePresentationId: null,
   clusterFocusMode: false,
   clusterFocusId: null,
   perspectiveTransition: null,
@@ -469,6 +470,14 @@ function wireUI() {
 
   document.getElementById('presentation-edit-btn').addEventListener('click', togglePresentationEditor)
 
+  document.getElementById('pres-new-btn').addEventListener('click', () => {
+    if (!Array.isArray(state.project.presentations)) state.project.presentations = []
+    const id = makeId('pres')
+    state.project.presentations.push({ id, name: 'New Presentation', steps: [] })
+    state.activePresentationId = id
+    renderPresentationEditor()
+  })
+
   ui.brandTitle.addEventListener('input', () => {
     state.project.meta.title = ui.brandTitle.textContent.trim()
     updateHud()
@@ -720,16 +729,18 @@ function sanitizeProject(project) {
     safe.perspectives = project.perspectives
     safe.activePerspectiveId = project.activePerspectiveId
   }
-  if (Array.isArray(project?.presentation?.steps)) {
-    safe.presentation = { steps: project.presentation.steps }
+  if (Array.isArray(project?.presentations)) {
+    safe.presentations = project.presentations
+  } else if (Array.isArray(project?.presentation?.steps) && project.presentation.steps.length > 0) {
+    safe.presentations = [{ id: makeId('pres'), name: 'Presentation 1', steps: project.presentation.steps }]
   } else {
-    safe.presentation = { steps: [] }
+    safe.presentations = []
   }
   return migrateProjectPerspectives(safe)
 }
 
 function migrateProjectPerspectives(project) {
-  if (!project.presentation) project.presentation = { steps: [] }
+  if (!Array.isArray(project.presentations)) project.presentations = []
   if (!Array.isArray(project.perspectives) || project.perspectives.length === 0) {
     const id = makeId('p')
     project.perspectives = [{
@@ -3794,7 +3805,14 @@ function disposeGroup(group) {
 
 // ── Presentation mode ───────────────────────────────────────────────────────
 
-function getPresentationSteps() { return state.project.presentation?.steps || [] }
+function getPresentationSteps() {
+  const pres = state.project.presentations?.find((p) => p.id === state.activePresentationId)
+  return pres?.steps || []
+}
+
+function getActivePresentation() {
+  return state.project.presentations?.find((p) => p.id === state.activePresentationId) || null
+}
 
 function stepIcon(step) {
   if (step.selectedLinkId) return '↗'
@@ -3849,63 +3867,124 @@ function captureStep() {
 
 function togglePresentationEditor() {
   const panel = document.getElementById('presentation-panel')
-  const isHidden = panel.classList.contains('hidden')
-  if (isHidden) {
+  if (panel.classList.contains('hidden')) {
     panel.classList.remove('hidden')
     renderPresentationEditor()
-    document.getElementById('pres-panel-close-btn').onclick = () => panel.classList.add('hidden')
-    document.getElementById('pres-add-step-btn').onclick = () => {
-      if (!state.project.presentation) state.project.presentation = { steps: [] }
-      state.project.presentation.steps.push(captureStep())
-      renderPresentationEditor()
-    }
-    document.getElementById('pres-start-btn').onclick = () => {
-      panel.classList.add('hidden')
-      enterPresentationMode()
-    }
   } else {
     panel.classList.add('hidden')
   }
 }
 
 function renderPresentationEditor() {
-  const steps = getPresentationSteps()
-  const list = document.getElementById('pres-step-list')
-  const startBtn = document.getElementById('pres-start-btn')
-  startBtn.disabled = steps.length === 0
+  const panel = document.getElementById('presentation-panel')
+  const presentations = state.project.presentations || []
 
-  if (steps.length === 0) {
-    list.innerHTML = '<div class="pres-step-empty">No steps yet.<br>Navigate to a view and click "+ Add current state".</div>'
-    return
-  }
-
-  list.innerHTML = steps.map((step, i) => `
-    <div class="pres-step-item" data-i="${i}">
-      <span class="pres-step-num">${i + 1}</span>
-      <span class="pres-step-icon">${stepIcon(step)}</span>
-      <div class="pres-step-info">
-        <div class="pres-step-label">${escapeHtml(stepLabel(step))}</div>
-        ${stepSub(step) ? `<div class="pres-step-sub">${escapeHtml(stepSub(step))}</div>` : ''}
+  // ── Presentation list ────────────────────────────────────────────
+  const listEl = document.getElementById('pres-list')
+  listEl.innerHTML = presentations.length === 0
+    ? '<div class="pres-step-empty" style="padding:12px 8px">No presentations yet.</div>'
+    : presentations.map((p) => `
+      <div class="pres-list-item ${p.id === state.activePresentationId ? 'selected' : ''}" data-pid="${p.id}">
+        <span class="pres-list-name" contenteditable="true" spellcheck="false" data-pid="${p.id}">${escapeHtml(p.name)}</span>
+        <button class="pres-list-play" data-action="play" data-pid="${p.id}" title="Present">▶</button>
+        <button class="pres-list-del"  data-action="del"  data-pid="${p.id}" title="Delete">✕</button>
       </div>
-      <div class="pres-step-actions">
-        <button class="pres-step-btn" data-action="up" data-i="${i}" title="Move up">↑</button>
-        <button class="pres-step-btn" data-action="down" data-i="${i}" title="Move down">↓</button>
-        <button class="pres-step-btn danger" data-action="del" data-i="${i}" title="Remove">✕</button>
-      </div>
-    </div>
-  `).join('')
+    `).join('')
 
-  list.querySelectorAll('.pres-step-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.i)
-      const action = btn.dataset.action
-      const arr = state.project.presentation.steps
-      if (action === 'del') arr.splice(idx, 1)
-      else if (action === 'up' && idx > 0) [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]]
-      else if (action === 'down' && idx < arr.length - 1) [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]]
+  listEl.querySelectorAll('.pres-list-item').forEach((row) => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('[contenteditable]') || e.target.closest('button')) return
+      state.activePresentationId = row.dataset.pid
       renderPresentationEditor()
     })
   })
+
+  listEl.querySelectorAll('[contenteditable]').forEach((nameEl) => {
+    nameEl.addEventListener('blur', () => {
+      const pid = nameEl.dataset.pid
+      const pres = state.project.presentations.find((p) => p.id === pid)
+      if (pres) pres.name = nameEl.textContent.trim() || 'Untitled'
+    })
+    nameEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); nameEl.blur() }
+      e.stopPropagation()
+    })
+    nameEl.addEventListener('click', (e) => e.stopPropagation())
+  })
+
+  listEl.querySelectorAll('button[data-action]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const pid = btn.dataset.pid
+      if (btn.dataset.action === 'del') {
+        state.project.presentations = state.project.presentations.filter((p) => p.id !== pid)
+        if (state.activePresentationId === pid) state.activePresentationId = null
+        renderPresentationEditor()
+      } else if (btn.dataset.action === 'play') {
+        state.activePresentationId = pid
+        panel.classList.add('hidden')
+        enterPresentationMode()
+      }
+    })
+  })
+
+  // ── Steps section ────────────────────────────────────────────────
+  const stepsSection = document.getElementById('pres-steps-section')
+  const activePres = getActivePresentation()
+
+  if (!activePres) {
+    stepsSection.classList.add('hidden')
+    return
+  }
+  stepsSection.classList.remove('hidden')
+
+  document.getElementById('pres-steps-heading').textContent = activePres.name
+
+  const steps = activePres.steps
+  const stepList = document.getElementById('pres-step-list')
+  const startBtn = document.getElementById('pres-start-btn')
+  startBtn.disabled = steps.length === 0
+
+  stepList.innerHTML = steps.length === 0
+    ? '<div class="pres-step-empty">No steps yet.<br>Navigate to a view and click "+ Add state".</div>'
+    : steps.map((step, i) => `
+      <div class="pres-step-item" data-i="${i}">
+        <span class="pres-step-num">${i + 1}</span>
+        <span class="pres-step-icon">${stepIcon(step)}</span>
+        <div class="pres-step-info">
+          <div class="pres-step-label">${escapeHtml(stepLabel(step))}</div>
+          ${stepSub(step) ? `<div class="pres-step-sub">${escapeHtml(stepSub(step))}</div>` : ''}
+        </div>
+        <div class="pres-step-actions">
+          <button class="pres-step-btn" data-action="up"   data-i="${i}" title="Move up">↑</button>
+          <button class="pres-step-btn" data-action="down" data-i="${i}" title="Move down">↓</button>
+          <button class="pres-step-btn danger" data-action="del" data-i="${i}" title="Remove">✕</button>
+        </div>
+      </div>
+    `).join('')
+
+  stepList.querySelectorAll('.pres-step-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.i)
+      const arr = activePres.steps
+      if (btn.dataset.action === 'del') arr.splice(idx, 1)
+      else if (btn.dataset.action === 'up'   && idx > 0)              [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]]
+      else if (btn.dataset.action === 'down' && idx < arr.length - 1) [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]]
+      renderPresentationEditor()
+    })
+  })
+
+  document.getElementById('pres-add-step-btn').onclick = () => {
+    activePres.steps.push(captureStep())
+    renderPresentationEditor()
+  }
+
+  document.getElementById('pres-start-btn').onclick = () => {
+    panel.classList.add('hidden')
+    enterPresentationMode()
+  }
+
+  document.getElementById('pres-panel-close-btn').onclick = () => panel.classList.add('hidden')
 }
 
 function enterPresentationMode() {
