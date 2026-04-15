@@ -301,6 +301,7 @@ function wireUI() {
     if (!result?.canceled) {
       state.currentProjectPath = result.projectPath || null
       syncProjectPath()
+      markClean()
       closeSaveVersionModal()
       showToast(saveLabel ? `New save created: ${saveLabel}` : 'New save created in this project')
     }
@@ -342,6 +343,7 @@ function wireUI() {
     if (!result?.canceled) {
       state.currentProjectPath = result.filePath
       syncProjectPath()
+      markClean()
       showToast('Project saved')
     }
   })
@@ -406,6 +408,7 @@ function wireUI() {
     autoResizeAllClusters()
     distributeAllClusters()
     refreshAll()
+    markClean()
     renderPerspectiveSwitcher()
     showToast('Project loaded')
   })
@@ -850,6 +853,7 @@ function showWorkspace() {
 
   renderPerspectiveSwitcher()
   resizeViewport()
+  markClean()
 }
 
 // ── Startup screen rendering ────────────────────────────────────────────────
@@ -1022,6 +1026,18 @@ function closeSaveVersionModal() {
 
 // ── Refresh helpers ─────────────────────────────────────────────────────────
 
+function markDirty() {
+  const btn = document.getElementById('save-project-btn')
+  btn.classList.remove('clean')
+  btn.classList.add('dirty')
+}
+
+function markClean() {
+  const btn = document.getElementById('save-project-btn')
+  btn.classList.remove('dirty')
+  btn.classList.add('clean')
+}
+
 function refreshAll() {
   syncProjectPath()
   syncSelectOptions()
@@ -1030,6 +1046,7 @@ function refreshAll() {
   renderLists()
   rebuildScene()
   refreshPanelsOnly()
+  markDirty()
 }
 
 function refreshPanelsOnly() {

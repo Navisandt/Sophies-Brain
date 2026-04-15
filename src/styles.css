@@ -283,6 +283,10 @@ body::before { display: none; }
   letter-spacing: 0.06em;
 }
 .sb-save-btn:hover { color: #ccc; border-color: rgba(255,255,255,0.22); background: transparent; transform: none; }
+.sb-save-btn.dirty  { color: #f5c842; border-color: rgba(245,200,66,0.5); }
+.sb-save-btn.dirty:hover { color: #f5c842; border-color: rgba(245,200,66,0.8); }
+.sb-save-btn.clean  { color: #4caf7d; border-color: rgba(76,175,125,0.5); }
+.sb-save-btn.clean:hover { color: #4caf7d; border-color: rgba(76,175,125,0.8); }
 
 .sb-path {
   font-size: 11px;
