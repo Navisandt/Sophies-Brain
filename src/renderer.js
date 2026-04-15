@@ -414,6 +414,13 @@ function wireUI() {
     showToast('Project loaded')
   })
 
+  document.getElementById('return-to-menu-btn').addEventListener('click', () => {
+    moreMenu.classList.add('hidden')
+    ui.appShell.classList.add('hidden-app')
+    ui.startupScreen.classList.remove('hidden')
+    bootstrapApp()
+  })
+
   // + add menu
   const addItemBtn = document.getElementById('add-item-btn')
   const addItemMenu = document.getElementById('add-item-menu')
