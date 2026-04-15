@@ -351,6 +351,19 @@ function wireUI() {
     moreMenu.classList.add('hidden')
   })
 
+  document.getElementById('download-save-btn').addEventListener('click', () => {
+    moreMenu.classList.add('hidden')
+    const title = state.project?.meta?.title || 'project'
+    const filename = title.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase() + '.json'
+    const blob = new Blob([JSON.stringify(state.project, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  })
+
   document.getElementById('sidebar-toggle-btn').addEventListener('click', () => {
     const sidebar = document.getElementById('sidebar')
     const appShell = document.getElementById('app-shell')
